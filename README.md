@@ -24,7 +24,8 @@
 
    - バックエンドサーバーを用いていない構成
    - オフラインでも動作可能
-   - 貴社の使用技術を参考に、バックエンドを Node.js（Express）・ Prisma 、DBを MySQL で構築し、docker-compose.yml で起動できるようにしてあるプロジェクトも作成してみました。
+   - 貴社の使用技術を参考に、バックエンドを Node.js（Express）・ Prisma 、DB を MySQL で構築し、docker-compose.yml で起動できるようにしてあるプロジェクトも作成してみました。
+   - https://github.com/kkiuchan/task-manager-app
 
 2. **UI/UX の改善**
 
