@@ -12,7 +12,20 @@ import { Calendar } from "lucide-react";
 import { useEffect } from "react";
 import TaskFilter from "../components/TaskFilter";
 import TaskList from "../components/TaskList";
-import TaskModal from "../components/TaskModal";
+
+import dynamic from "next/dynamic";
+
+// 遅延ローディング用のコンポーネント
+const TaskModal = dynamic(() => import("@/components/TaskModal"), {
+  loading: () => <div className="p-4 text-center">読み込み中...</div>,
+  ssr: false,
+});
+
+// モバイル用のTaskFilterのみ遅延ローディング
+const MobileTaskFilter = dynamic(() => import("@/components/TaskFilter"), {
+  loading: () => <div className="p-4 text-center">読み込み中...</div>,
+  ssr: false,
+});
 
 export default function Home() {
   const fetchCategories = useCategoryStore((state) => state.fetchCategories);
@@ -52,7 +65,7 @@ export default function Home() {
             </DrawerTrigger>
             <DrawerContent className="pb-4">
               <DrawerTitle className="text-center py-2">フィルター</DrawerTitle>
-              <TaskFilter />
+              <MobileTaskFilter />
             </DrawerContent>
           </Drawer>
         </div>

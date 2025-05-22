@@ -1,6 +1,6 @@
 import { useCategoryStore } from "@/store/categoryStore";
 import { useFilterStore } from "@/store/filterStore";
-import React, { useEffect } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Input } from "./ui/input";
 import {
   Select,
@@ -25,24 +25,30 @@ type SortOption = (typeof sortOptions)[number]["value"];
 type OrderOption = (typeof orderOptions)[number]["value"];
 
 const TaskFilter: React.FC = () => {
+  console.log("TaskFilter rendered");
+  const [input, setInput] = useState("");
   const { categories } = useCategoryStore();
-  const { search, category, completed, sort, order, setFilter } =
-    useFilterStore();
+  const { category, completed, sort, order, setFilter } = useFilterStore();
 
+  const isFirstRender = useRef(true);
   // debounce検索ワード
   useEffect(() => {
+    if (isFirstRender.current) {
+      isFirstRender.current = false;
+      return; // 初回レンダリング時はスキップ
+    }
     const timer = setTimeout(() => {
-      setFilter({ search });
+      setFilter({ search: input });
     }, 400);
     return () => clearTimeout(timer);
-  }, [search, setFilter]);
+  }, [input, setFilter]);
 
   return (
     <div className="flex flex-wrap gap-2 items-center">
       <Input
         placeholder="検索ワード"
-        value={search}
-        onChange={(e) => setFilter({ search: e.target.value })}
+        value={input}
+        onChange={(e) => setInput(e.target.value)}
         className="w-32"
       />
       <Select
