@@ -1,5 +1,7 @@
 import { create } from "zustand";
 import { devtools } from "zustand/middleware";
+import { useTaskStore } from "./taskStore";
+import { useToastStore } from "./toastStore";
 
 export interface Category {
   id: number;
@@ -10,7 +12,7 @@ interface CategoryState {
   categories: Category[];
   loading: boolean;
   error: string | null;
-  fetchCategory: (id: number) => Promise<Category | null>;
+  fetchCategory: (id: number) => Promise<Category | undefined>;
   fetchCategories: () => Promise<void>;
   addCategory: (name: string) => Promise<number>;
   deleteCategory: (id: number) => Promise<void>;
@@ -69,11 +71,36 @@ export const useCategoryStore = create<CategoryState>()(
         try {
           const storedData = localStorage.getItem(STORAGE_KEY);
           const categories = storedData ? JSON.parse(storedData) : [];
+          const categoryToDelete = categories.find(
+            (cat: Category) => cat.id === id
+          );
           const updatedCategories = categories.filter(
             (cat: Category) => cat.id !== id
           );
           localStorage.setItem(STORAGE_KEY, JSON.stringify(updatedCategories));
           set({ categories: updatedCategories });
+
+          // カテゴリーが削除されたタスクのカテゴリーをnullに更新
+          const tasks = useTaskStore.getState().tasks;
+          const affectedTasks = tasks.filter(
+            (task) => task.category?.id === id
+          );
+          if (affectedTasks.length > 0) {
+            const updatedTasks = tasks.map((task) => {
+              if (task.category?.id === id) {
+                return { ...task, category: null };
+              }
+              return task;
+            });
+            useTaskStore.getState().updateTasks(updatedTasks);
+
+            // 通知を表示
+            useToastStore
+              .getState()
+              .showToast(
+                `${categoryToDelete.name}カテゴリーを削除しました。${affectedTasks.length}件のタスクが未分類になりました。`
+              );
+          }
         } catch (e) {
           console.error("カテゴリの削除に失敗しました:", e);
           throw e;

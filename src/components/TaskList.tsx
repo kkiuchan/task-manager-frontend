@@ -87,7 +87,7 @@ const TaskList: React.FC = () => {
           <TaskItem
             key={task.id}
             task={task}
-            // isDeleting={isDeleting}
+            isDeleting={isDeleting}
             onDelete={handleDelete}
             onEdit={handleEdit}
             onToggle={handleToggle}

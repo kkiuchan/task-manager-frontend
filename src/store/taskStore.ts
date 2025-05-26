@@ -19,8 +19,10 @@ interface TaskState {
   fetchTasks: (filter?: TaskFilterParams) => Promise<void>;
   addTask: (task: Omit<Task, "id">) => Promise<number>;
   updateTask: (id: number, task: Partial<Task>) => Promise<void>;
+  updateTasks: (tasks: Task[]) => Promise<void>;
   deleteTask: (id: number) => Promise<void>;
   getTaskCount: () => { completed: number; incomplete: number };
+  setTasks: (tasks: Task[]) => void;
 }
 
 export interface TaskFilterParams {
@@ -147,6 +149,19 @@ export const useTaskStore = create<TaskState>()(
         }
       },
 
+      updateTasks: async (tasks: Task[]) => {
+        try {
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(tasks));
+          const filter = useFilterStore.getState();
+          const filteredTasks = filterAndSortTasks(tasks, filter);
+
+          set({ tasks: filteredTasks });
+        } catch (e) {
+          console.error("タスクの更新に失敗しました:", e);
+          throw e;
+        }
+      },
+
       deleteTask: async (id: number) => {
         try {
           const storedData = localStorage.getItem(STORAGE_KEY);
@@ -170,6 +185,10 @@ export const useTaskStore = create<TaskState>()(
           completed: tasks.filter((t) => t.completed).length,
           incomplete: tasks.filter((t) => !t.completed).length,
         };
+      },
+
+      setTasks: (tasks: Task[]) => {
+        set({ tasks });
       },
     }),
     {
