@@ -50,7 +50,7 @@ const TaskForm: React.FC = React.memo(() => {
         description,
         dueDate,
         completed: false,
-        category: fetchedCategory,
+        category: fetchedCategory || null,
       });
 
       setTitle("");

@@ -69,12 +69,11 @@ function filterAndSortTasks(tasks: Task[], filter: TaskFilterParams): Task[] {
             order
           );
         }
-        const aValue = a[filter.sort as keyof Task];
-        const bValue = b[filter.sort as keyof Task];
-        if (aValue === null && bValue === null) return 0;
-        if (aValue === null) return 1 * order;
-        if (bValue === null) return -1 * order;
-        return (aValue > bValue ? 1 : -1) * order;
+        if (filter.sort === "createdAt") {
+          // IDを作成日として扱う
+          return (a.id - b.id) * order;
+        }
+        return 0; // 未対応のソート条件の場合は順序を変更しない
       });
     }
   }

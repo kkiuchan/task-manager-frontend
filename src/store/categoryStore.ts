@@ -86,13 +86,13 @@ export const useCategoryStore = create<CategoryState>()(
             (task) => task.category?.id === id
           );
           if (affectedTasks.length > 0) {
-            const updatedTasks = tasks.map((task) => {
+            const tasksWithCategoryRemoved = tasks.map((task) => {
               if (task.category?.id === id) {
                 return { ...task, category: null };
               }
               return task;
             });
-            useTaskStore.getState().updateTasks(updatedTasks);
+            useTaskStore.getState().updateTasks(tasksWithCategoryRemoved);
 
             // 通知を表示
             useToastStore
